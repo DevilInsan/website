@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Tools</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="background"></div>
+  <div class="container">
+    <h1>Image Tools</h1>
+    <p class="info">Explore powerful tools for image compression, background removal, and enhancement.</p>
+    <div class="tools-grid">
+      <div class="tool-card" onclick="navigateToCompress()">
+        <div class="tool-icon">📷</div>
+        <h2>Image Compression</h2>
+        <p>Compress your images easily and quickly in the browser.</p>
+      </div>
+      <div class="tool-card" onclick="navigateToErase()">
+        <div class="tool-icon">🧹</div>
+        <h2>Background Eraser</h2>
+        <p>Remove backgrounds from images using AI.</p>
+      </div>
+      <div class="tool-card" onclick="navigateToEnhancer()">
+        <div class="tool-icon">✨</div>
+        <h2>AI Image Enhancer</h2>
+        <p>Enhance your images using AI for better quality and clarity.</p>
+      </div>
+    </div>
+    <div class="credit">Made By <span>Piyush</span></div>
+  </div>
+  <div id="custom-cursor"></div>
+  <div id="cursor-circle"></div>
+  <script src="script.js"></script>
+  <script>
+    function navigateToCompress() {
+      window.location.href = 'compress.html';
+    }
+
+    function navigateToErase() {
+      window.location.href = 'erase.html';
+    }
+
+    function navigateToEnhancer() {
+      window.location.href = 'enhancer.html';
+    }
+  </script>
+</body>
+</html>

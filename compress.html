@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compression Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="background"></div>
+  <div class="container">
+    <h1>Image Compression Tool</h1>
+    <div class="content-wrapper">
+      <div class="left-section">
+        <p class="info">Compress your images easily and quickly in the browser. Adjust the quality using the slider and download the compressed image.</p>
+        <div class="upload-section">
+          <label for="image-upload" class="upload-label">Upload Image</label>
+          <input type="file" id="image-upload" accept="image/*">
+        </div>
+        <div class="controls">
+          <label for="quality-slider">Compression Quality: <span id="quality-value">80</span>%</label>
+          <input type="range" id="quality-slider" min="1" max="100" value="80">
+          <button id="compress-btn" disabled>Compress Image</button>
+        </div>
+      </div>
+      <div class="right-section">
+        <img id="preview" alt="Compressed Image Preview">
+        <a id="download-link" class="hidden download-btn">Download Compressed Image</a>
+      </div>
+    </div>
+    <button class="back-btn" onclick="navigateToHome()">Back to Home</button>
+    <div class="credit">Made By <span>Piyush</span></div>
+  </div>
+  <div id="custom-cursor"></div>
+  <div id="cursor-circle"></div>
+  <script src="script.js"></script>
+  <script>
+    function navigateToHome() {
+      window.location.href = 'index.html';
+    }
+
+    // Image Compression Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const imageUpload = document.getElementById('image-upload');
+      const qualitySlider = document.getElementById('quality-slider');
+      const qualityValue = document.getElementById('quality-value');
+      const compressBtn = document.getElementById('compress-btn');
+      const preview = document.getElementById('preview');
+      const downloadLink = document.getElementById('download-link');
+
+      let uploadedImage = null;
+
+      qualitySlider.addEventListener('input', () => {
+        qualityValue.textContent = qualitySlider.value;
+      });
+
+      imageUpload.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            uploadedImage = e.target.result;
+            preview.src = uploadedImage;
+            preview.style.display = 'block';
+            compressBtn.disabled = false;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      compressBtn.addEventListener('click', () => {
+        if (!uploadedImage) return;
+
+        const quality = parseInt(qualitySlider.value) / 100;
+        const img = new Image();
+        img.src = uploadedImage;
+
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(
+            (blob) => {
+              const compressedImageUrl = URL.createObjectURL(blob);
+              preview.src = compressedImageUrl;
+              downloadLink.href = compressedImageUrl;
+              downloadLink.download = 'compressed-image.jpg';
+              downloadLink.classList.remove('hidden');
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Enhancer Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="background"></div>
+  <div class="container">
+    <h1>AI Image Enhancer Tool</h1>
+    <div class="content-wrapper">
+      <div class="left-section">
+        <p class="info">Upload a blurry or low-quality image to enhance its quality using AI. Compare before and after results.</p>
+        <div class="upload-section">
+          <label for="image-upload" class="upload-label">Upload Image</label>
+          <input type="file" id="image-upload" accept="image/*">
+        </div>
+        <button id="enhance-btn" disabled>Enhance Image</button>
+      </div>
+      <div class="right-section">
+        <div class="before-after">
+          <img id="before" alt="Before Enhancement">
+          <img id="after" alt="After Enhancement" class="hidden">
+        </div>
+        <a id="download-link" class="hidden download-btn">Download Enhanced Image</a>
+      </div>
+    </div>
+    <button class="back-btn" onclick="navigateToHome()">Back to Home</button>
+    <div class="credit">Made By <span>Piyush</span></div>
+  </div>
+  <div id="custom-cursor"></div>
+  <div id="cursor-circle"></div>
+  <script src="script.js"></script>
+  <script>
+    function navigateToHome() {
+      window.location.href = 'index.html';
+    }
+
+    // AI Image Enhancer Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const imageUpload = document.getElementById('image-upload');
+      const enhanceBtn = document.getElementById('enhance-btn');
+      const beforeImage = document.getElementById('before');
+      const afterImage = document.getElementById('after');
+      const downloadLink = document.getElementById('download-link');
+
+      let uploadedImage = null;
+
+      imageUpload.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            uploadedImage = e.target.result;
+            beforeImage.src = uploadedImage;
+            beforeImage.style.display = 'block';
+            enhanceBtn.disabled = false;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      enhanceBtn.addEventListener('click', async () => {
+        if (!uploadedImage) return;
+
+        // Show loading state
+        enhanceBtn.disabled = true;
+        enhanceBtn.textContent = 'Enhancing...';
+
+        // Use DeepAI's Torch-SRGAN API for image enhancement
+        const apiKey = 'f764f073-5c23-4302-bf86-26262a30045e'; // Your DeepAI API key
+        const formData = new FormData();
+        formData.append('image', imageUpload.files[0]);
+
+        try {
+          const response = await fetch('https://api.deepai.org/api/torch-srgan', {
+            method: 'POST',
+            headers: {
+              'api-key': apiKey,
+            },
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to enhance image');
+          }
+
+          const data = await response.json();
+          const enhancedImageUrl = data.output_url;
+
+          afterImage.src = enhancedImageUrl;
+          afterImage.classList.remove('hidden');
+          downloadLink.href = enhancedImageUrl;
+          downloadLink.download = 'enhanced-image.png';
+          downloadLink.classList.remove('hidden');
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to enhance image. Please try again.');
+        } finally {
+          enhanceBtn.disabled = false;
+          enhanceBtn.textContent = 'Enhance Image';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
